@@ -72,8 +72,7 @@ class printerService extends Controller
                 $impresora->text("$" . number_format($venta->pago[0]->pago->monto_ingresado, 2, '.', '') . "\n");
                 $impresora->text("Cambio: $" . number_format(($venta->pago[0]->pago->monto_a_pagar - $venta->pago[0]->pago->monto_ingresado), 2, '.', '') . "\n");
                 if (Count($venta->pago) > 1) {
-                    $impresora->text("Pago Requerido: $" . number_format($venta->pago[1]->pago->monto_a_pagar, 2, '.', '') . "\n");
-                    $impresora->text("Pago c/ " . strpos($venta->pago[1]->pago_type, 'efectivo') ? 'efectivo' : 'tarjeta' . " $" . number_format($venta->pago[1]->pago->monto_ingresado, 2, '.', '') . "\n");
+                    $impresora->text("Pago c/". (strpos($venta->pago[1]->pago_type, 'efectivo') ? 'Efectivo :'. number_format($venta->pago[1]->pago->monto, 2, '.', '')  : 'Tarjeta :' . number_format($venta->pago[1]->pago->monto, 2, '.', '') ) . "\n");
                 }
                 $impresora->setJustification(Printer::JUSTIFY_CENTER);
                 $impresora->setTextSize(1.2, 1.2);

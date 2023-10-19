@@ -79,6 +79,7 @@ class printerService extends Controller
                 $impresora->text("                                \n");
                 $impresora->text("Fue un placer Atenderle \n");
                 $impresora->feed(5);
+                $impresora->pulse();
                 $impresora->close();
             }
         );

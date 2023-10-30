@@ -60,7 +60,7 @@ class printerService extends Controller
                 $impresora->text("Cnt Prod:" . $venta->cantidad_productos . "     ");
                 $impresora->setJustification(Printer::JUSTIFY_RIGHT);
                 $impresora->text("Total: $" . number_format($venta->total_venta, 2, '.', '') . "\n");
-                $impresora->text("Pago Requerido: $" . number_format($venta->pago[0]->pago->monto_a_pagar, 2, '.', '') . "\n");
+                $impresora->text("Pago Requerido: $" . number_format($venta->total_venta, 2, '.', '') . "\n");
                 $descuento = 0;
                 foreach($venta->detalleventa as $descuentoDtv){
                     $descuento += $descuentoDtv->descuento;
@@ -68,11 +68,21 @@ class printerService extends Controller
                 if($descuento != 0){
                     $impresora->text("Descuento: $" . number_format($descuento, 2, '.', '') . "\n");
                 }
-                $impresora->text("Pago c/ " . (strpos($venta->pago[0]->pago_type, 'efectivo') ? 'efectivo :' : 'tarjeta :'));
-                $impresora->text("$" . number_format($venta->pago[0]->pago->monto_ingresado, 2, '.', '') . "\n");
-                $impresora->text("Cambio: $" . number_format(($venta->pago[0]->pago->monto_a_pagar - $venta->pago[0]->pago->monto_ingresado), 2, '.', '') . "\n");
+                if(strpos($venta->pago[0]->pago_type, 'efectivo')){
+                    $impresora->text("Pago c/ " . (strpos($venta->pago[0]->pago_type, 'efectivo') ? 'efectivo :' : 'tarjeta :'));
+                    $impresora->text("$" . number_format($venta->pago[0]->pago->monto_ingresado, 2, '.', '') . "\n");
+                    $impresora->text("Cambio: $" . number_format(($venta->pago[0]->pago->monto_a_pagar - $venta->pago[0]->pago->monto_ingresado), 2, '.', '') . "\n");
+                }else {
+                    $impresora->text("Pago c/". (strpos($venta->pago[0]->pago_type, 'efectivo') ? 'Efectivo :'. number_format($venta->pago[0]->pago->monto, 2, '.', '')  : 'Tarjeta :' . number_format($venta->pago[0]->pago->monto, 2, '.', '') ) . "\n");
+                }
                 if (Count($venta->pago) > 1) {
-                    $impresora->text("Pago c/". (strpos($venta->pago[1]->pago_type, 'efectivo') ? 'Efectivo :'. number_format($venta->pago[1]->pago->monto, 2, '.', '')  : 'Tarjeta :' . number_format($venta->pago[1]->pago->monto, 2, '.', '') ) . "\n");
+                    if(strpos($venta->pago[1]->pago_type, 'efectivo')){
+                        $impresora->text("Pago c/ " . (strpos($venta->pago[1]->pago_type, 'efectivo') ? 'efectivo :' : 'tarjeta :'));
+                        $impresora->text("$" . number_format($venta->pago[1]->pago->monto_ingresado, 2, '.', '') . "\n");
+                        $impresora->text("Cambio: $" . number_format(($venta->pago[1]->pago->monto_a_pagar - $venta->pago[0]->pago->monto_ingresado), 2, '.', '') . "\n");
+                    }else{
+                        $impresora->text("Pago c/". (strpos($venta->pago[1]->pago_type, 'efectivo') ? 'Efectivo :'. number_format($venta->pago[1]->pago->monto, 2, '.', '')  : 'Tarjeta :' . number_format($venta->pago[0]->pago->monto, 2, '.', '') ) . "\n");
+                    }
                 }
                 $impresora->setJustification(Printer::JUSTIFY_CENTER);
                 $impresora->setTextSize(1.2, 1.2);

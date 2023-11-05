@@ -73,7 +73,7 @@ class printerService extends Controller
                     $impresora->text("$" . number_format($venta->pago[0]->pago->monto_ingresado, 2, '.', '') . "\n");
                     $impresora->text("Cambio: $" . number_format(($venta->pago[0]->pago->monto_a_pagar - $venta->pago[0]->pago->monto_ingresado), 2, '.', '') . "\n");
                 }else {
-                    $impresora->text("Pago c/". (strpos($venta->pago[0]->pago_type, 'efectivo') ? 'Efectivo :'. number_format($venta->pago[0]->pago->monto, 2, '.', '')  : 'Tarjeta :' . number_format($venta->pago[0]->pago->monto, 2, '.', '') ) . "\n");
+                    $impresora->text("Pago c/ Tarjeta" . number_format($venta->pago[0]->pago->cod_rastreo, 2, '.', '') . "\n");
                 }
                 if (Count($venta->pago) > 1) {
                     if(strpos($venta->pago[1]->pago_type, 'efectivo')){
@@ -81,7 +81,8 @@ class printerService extends Controller
                         $impresora->text("$" . number_format($venta->pago[1]->pago->monto_ingresado, 2, '.', '') . "\n");
                         $impresora->text("Cambio: $" . number_format(($venta->pago[1]->pago->monto_a_pagar - $venta->pago[0]->pago->monto_ingresado), 2, '.', '') . "\n");
                     }else{
-                        $impresora->text("Pago c/". (strpos($venta->pago[1]->pago_type, 'efectivo') ? 'Efectivo :'. number_format($venta->pago[1]->pago->monto, 2, '.', '')  : 'Tarjeta :' . number_format($venta->pago[0]->pago->monto, 2, '.', '') ) . "\n");
+                        dd($venta->pago[1]);
+                        $impresora->text("Pago c/ Tarjeta" . number_format($venta->pago[1]->pago->cod_rastreo, 2, '.', '') . "\n");
                     }
                 }
                 $impresora->setJustification(Printer::JUSTIFY_CENTER);
@@ -96,21 +97,13 @@ class printerService extends Controller
         $promise->wait();
     }
 
-    public function examples()
+    public function openchash(Request $request)
     {
-
-
-        $connector = new WindowsPrintConnector('EC-PM-5890X');
+        $Impresoranombre = $request->impresora;
+        $connector = new WindowsPrintConnector($Impresoranombre);
         $impresora = new Printer($connector);
-        $impresora->setJustification(Printer::JUSTIFY_CENTER);
-        $impresora->setTextSize(2, 2);
-        $impresora->text("Imprimiendo\n");
-        $impresora->text("ticket\n");
-        $impresora->text("desde\n");
-        $impresora->text("Laravel\n");
-        $impresora->setTextSize(1, 1);
-        $impresora->text("https://parzibyte.me");
-        $impresora->feed(5);
+        $impresora->pulse();
         $impresora->close();
+        return response('',200);
     }
 }

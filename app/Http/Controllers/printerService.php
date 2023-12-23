@@ -105,4 +105,49 @@ class printerService extends Controller
         $impresora->close();
         return response('',200);
     }
+
+    public function printExpense(Request $data)
+    {
+        $client = new \GuzzleHttp\Client();
+        $request = new \GuzzleHttp\Psr7\Request('GET', 'http://' . $data->host . '/api/gastos/' . $data->id_gasto);
+        $Impresoranombre = $data->impresora;
+
+        $promise = $client->sendAsync($request)->then(
+            function ($response) use ($Impresoranombre) {
+                $gasto = $response->getBody();
+                $Expense = json_decode($gasto);
+
+                $connector = new WindowsPrintConnector($Impresoranombre);
+                $printer = new Printer($connector);
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                $printer->setTextSize(1.5, 1.5);
+
+                // Print expense details
+                $printer->text("ID Gasto: #" . $Expense->id_gasto . "\n");
+                $printer->text("Descripción: " . $Expense->descripcion . "\n");
+                $printer->text("Monto: $" . $Expense->monto . "\n");
+                $printer->text("Fecha: " . $Expense->fecha . "\n");
+
+                // Other details related to the expense or associated data can be printed here
+
+                $printer->setTextSize(1, 1);
+                $printer->text("--------------------------------\n");
+                $printer->text("Detalles adicionales aquí...\n");
+                $printer->text("--------------------------------\n");
+
+                // Print additional information or formatting as needed
+
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                $printer->setTextSize(1.2, 1.2);
+                $printer->text("                                \n");
+                $printer->text("¡Comprobante de gasto! \n");
+                $printer->feed(5);
+                $printer->pulse();
+                $printer->close();
+            }
+        );
+
+        $promise->wait();
+    }
+
 }

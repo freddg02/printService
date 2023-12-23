@@ -20,5 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::get('print',[printerService::class,'print']);
 Route::get('openchash',[printerService::class,'openchash']);
+Route::get('printExpense', [printerService::class, 'printExpense']);
 
 

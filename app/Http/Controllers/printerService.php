@@ -109,7 +109,7 @@ class printerService extends Controller
     public function printExpense(Request $data)
     {
         $client = new \GuzzleHttp\Client();
-        $request = new \GuzzleHttp\Psr7\Request('GET', 'http://' . $data->host . '/api/gastos/' . $data->id_gasto);
+        $request = new \GuzzleHttp\Psr7\Request('GET', 'http://' . $data->host . '/api/cajas/gastos/' . $data->id_gasto);
         $Impresoranombre = $data->impresora;
 
         $promise = $client->sendAsync($request)->then(
